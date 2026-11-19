@@ -61,7 +61,7 @@ function setup() {
   ];
   sum.getRange(1, 1, rows.length, 2).setValues(rows);
   sum.getRange('A1:B1').setFontWeight('bold').setBackground('#121212').setFontColor('#ffffff');
-  sum.getRange('A5:B5').setFontWeight('bold').setBackground('#40B5FE');
+  sum.getRange('A5:B5').setFontWeight('bold').setBackground('#c8a46a');
   sum.getRange('A8').setFontWeight('bold');
   sum.setColumnWidth(1, 360);
   // Demande les autorisations (Sheets + courriel) d'un coup.
@@ -130,7 +130,7 @@ function sendGuestEmail_(to, prenom, yes, guests, p, updated) {
 
   const detailsRows = yes ? `
       ${tr_('Quand', ev.dateText)}
-      ${tr_('Où', `<a href="${ev.mapsUrl}" style="color:#40B5FE">${ev.address}</a>`)}
+      ${tr_('Où', `<a href="${ev.mapsUrl}" style="color:#c8a46a">${ev.address}</a>`)}
       ${tr_('Code vestimentaire', ev.dress)}
       ${tr_('Ta réservation', `${1 + guests} personne${guests ? 's' : ''}${p.noms_accompagnateurs ? ' (' + esc_(p.noms_accompagnateurs) + ')' : ''}`)}
       ${p.restrictions ? tr_('Restrictions notées', esc_(p.restrictions)) : ''}` : '';
@@ -140,7 +140,7 @@ function sendGuestEmail_(to, prenom, yes, guests, p, updated) {
       <p style="font-size:16px;line-height:1.6;margin:0 0 20px">${updated ? 'Ta réponse a bien été mise à jour.' : 'Ta présence est confirmée!'} On a vraiment hâte de trinquer avec toi pour notre 3<sup>e</sup> party annuel.</p>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:0 0 24px">${detailsRows}</table>
       <p style="font-size:15px;line-height:1.6;margin:0 0 8px"><strong>Au menu :</strong> tapas et bouchées du restaurant Tartaro, bar complet avec notre sommelier invité de Fiola Import, expo numérique 2026, notre podcast annuel et une salle VIP pour une dégustation signature.</p>
-      <p style="margin:24px 0"><a href="${ev.gcalUrl}" style="background:#40B5FE;color:#04121d;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;display:inline-block">Ajouter à mon agenda</a></p>
+      <p style="margin:24px 0"><a href="${ev.gcalUrl}" style="background:#c8a46a;color:#0b0b0b;text-decoration:none;font-weight:700;padding:12px 22px;border-radius:999px;display:inline-block">Ajouter à mon agenda</a></p>
       <p style="font-size:14px;line-height:1.6;color:#666;margin:0">Un changement? Remplis à nouveau le formulaire avec le même courriel, ou réponds simplement à ce message.</p>`
     : `
       <p style="font-size:16px;line-height:1.6;margin:0 0 16px">Salut ${esc_(prenom)},</p>
@@ -151,7 +151,7 @@ function sendGuestEmail_(to, prenom, yes, guests, p, updated) {
   <div style="background:#f3f4f6;padding:24px 12px;font-family:Montserrat,Arial,sans-serif;color:#121212">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:14px;overflow:hidden">
       <tr><td style="background:#121212;padding:28px 28px 24px">
-        <div style="color:#40B5FE;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700">Party annuel · 3e édition</div>
+        <div style="color:#c8a46a;font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700">Party annuel · 3e édition</div>
         <div style="color:#ffffff;font-size:34px;line-height:1.05;font-weight:800;margin-top:8px;font-family:'Bebas Neue',Impact,Arial,sans-serif;letter-spacing:.02em">DFUSE 2026 🥂</div>
       </td></tr>
       <tr><td style="padding:28px">${body}</td></tr>
