@@ -39,39 +39,68 @@ function setup() {
   sh.getRange(1, 1, 1, HEADERS.length).setFontWeight('bold').setBackground('#121212').setFontColor('#ffffff');
   sh.setColumnWidths(1, HEADERS.length, 150);
 
-  let sum = ss.getSheetByName(CONFIG.SUMMARY_NAME) || ss.insertSheet(CONFIG.SUMMARY_NAME);
-  sum.clear();
-  const R = CONFIG.SHEET_NAME;
+  // Recalcule le résumé automatiquement à chaque modification de la feuille
+  // (ajout, modification ou suppression de lignes).
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'refreshSummary') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('refreshSummary').forSpreadsheet(ss).onChange().create();
+
+  refreshSummary();
+  // Demande les autorisations (Sheets + courriel) d'un coup.
+  MailApp.getRemainingDailyQuota();
+}
+
+/** Menu « Party DFuse » dans la feuille. */
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Party DFuse')
+    .addItem('Actualiser le résumé', 'refreshSummary')
+    .addToUi();
+}
+
+/**
+ * Calcule les totaux dans le script et écrit des valeurs (pas de formules) :
+ * fonctionne peu importe la langue de la feuille.
+ */
+function refreshSummary() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = getRsvpSheet_();
+  const last = sh.getLastRow();
+  const data = last > 1 ? sh.getRange(2, 1, last - 1, HEADERS.length).getValues() : [];
+  const rowsData = data.filter(function (r) { return String(r[5]).trim() !== ''; });
+  const yes = rowsData.filter(function (r) { return r[2] === 'Oui'; });
+  const sumOf = function (list, col) { return list.reduce(function (a, r) { return a + (Number(r[col]) || 0); }, 0); };
+  const drink = function (name) { return yes.filter(function (r) { return String(r[10]).indexOf(name) !== -1; }).length; };
+
   const rows = [
     ['Indicateur', 'Valeur'],
-    ['Réponses reçues', `=COUNTA(${R}!F2:F)`],
-    ['Invités qui viennent', `=COUNTIF(${R}!C2:C,"Oui")`],
-    ['Accompagnateurs', `=SUMIF(${R}!C2:C,"Oui",${R}!H2:H)`],
-    ['TOTAL PERSONNES ATTENDUES', `=SUM(${R}!J2:J)`],
-    ['Absents', `=COUNTIF(${R}!C2:C,"Non")`],
+    ['Réponses reçues', rowsData.length],
+    ['Invités qui viennent', yes.length],
+    ['Accompagnateurs', sumOf(yes, 7)],
+    ['TOTAL PERSONNES ATTENDUES', sumOf(yes, 9)],
+    ['Absents', rowsData.filter(function (r) { return r[2] === 'Non'; }).length],
     ['', ''],
     ['Boissons (nb de réponses « Oui » qui ont coché)', ''],
-    ['Vin', `=COUNTIFS(${R}!C2:C,"Oui",${R}!K2:K,"*Vin*")`],
-    ['Bulles', `=COUNTIFS(${R}!C2:C,"Oui",${R}!K2:K,"*Bulles*")`],
-    ['Bière', `=COUNTIFS(${R}!C2:C,"Oui",${R}!K2:K,"*Bière*")`],
-    ['Cocktails', `=COUNTIFS(${R}!C2:C,"Oui",${R}!K2:K,"*Cocktails*")`],
-    ['Sans alcool', `=COUNTIFS(${R}!C2:C,"Oui",${R}!K2:K,"*Sans alcool*")`],
+    ['Vin', drink('Vin')],
+    ['Bulles', drink('Bulles')],
+    ['Bière', drink('Bière')],
+    ['Cocktails', drink('Cocktails')],
+    ['Sans alcool', drink('Sans alcool')],
     ['', ''],
-    ['Réponses avec restrictions alimentaires', `=COUNTIFS(${R}!C2:C,"Oui",${R}!L2:L,"<>")`]
+    ['Réponses avec restrictions alimentaires', yes.filter(function (r) { return String(r[11]).trim() !== ''; }).length],
+    ['', ''],
+    ['Dernière mise à jour', new Date()]
   ];
-  // Libellés en texte, puis formules via setFormula (syntaxe anglaise acceptée peu importe
-  // la langue de la feuille — setValues échoue en français, qui attend des « ; »).
-  sum.getRange(1, 1, rows.length, 1).setValues(rows.map(function (r) { return [r[0]]; }));
-  sum.getRange('B1').setValue('Valeur');
-  rows.forEach(function (r, i) {
-    if (String(r[1]).charAt(0) === '=') sum.getRange(i + 1, 2).setFormula(r[1]);
-  });
+
+  const sum = ss.getSheetByName(CONFIG.SUMMARY_NAME) || ss.insertSheet(CONFIG.SUMMARY_NAME);
+  sum.clear();
+  sum.getRange(1, 1, rows.length, 2).setValues(rows);
   sum.getRange('A1:B1').setFontWeight('bold').setBackground('#121212').setFontColor('#ffffff');
   sum.getRange('A5:B5').setFontWeight('bold').setBackground('#c8a46a');
   sum.getRange('A8').setFontWeight('bold');
+  sum.getRange('A17:B17').setFontColor('#888888');
   sum.setColumnWidth(1, 360);
-  // Demande les autorisations (Sheets + courriel) d'un coup.
-  MailApp.getRemainingDailyQuota();
+  sum.setColumnWidth(2, 160);
 }
 
 function doGet() {
@@ -119,6 +148,8 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
+
+  try { refreshSummary(); } catch (err) { console.error('Résumé', err); }
 
   try { sendGuestEmail_(email, prenom, yes, guests, p, updated); } catch (err) { console.error('Courriel invité', err); }
   try { sendOrganizerEmail_(prenom, nom, email, yes, guests, p, updated); } catch (err) { console.error('Avis organisateur', err); }
