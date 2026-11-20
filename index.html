@@ -87,7 +87,28 @@
   .merci h2{font-size:clamp(46px,6vw,88px);margin-top:28px}
   .merci p{color:var(--muted);margin:0 0 18px;font-size:16px}
   .team{position:relative;margin:0}
-  .team img{width:100%;aspect-ratio:3/1;object-fit:cover;filter:grayscale(.15) contrast(1.02)}
+  .team .frame{position:relative;overflow:hidden}
+  .team img{width:100%;aspect-ratio:16/8;object-fit:cover;object-position:center 30%}
+  .graded{filter:grayscale(1) sepia(.16) contrast(1.12) brightness(.92)}
+  .team .frame::after,.founders .frame::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 40%,rgba(11,11,11,0) 55%,rgba(11,11,11,.55) 100%),linear-gradient(0deg,rgba(11,11,11,.45),rgba(11,11,11,0) 30%)}
+
+  /* FONDATEURS — closing band */
+  .founders{padding:0 0 140px}
+  .founders .frame{position:relative;overflow:hidden}
+  .founders img{width:100%;aspect-ratio:3/1;object-fit:cover}
+  .founders .frame::after{background:linear-gradient(0deg,rgba(11,11,11,.92) 0%,rgba(11,11,11,.35) 55%,rgba(11,11,11,.15) 100%)}
+  .founders .over{position:absolute;inset:auto 0 0 0;z-index:2;padding:48px;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:24px}
+  .founders h2{font-size:clamp(34px,4.4vw,60px)}
+
+  /* PARTENAIRES — cocktail photo */
+  .partners-sec{position:relative;overflow:hidden}
+  .partners-sec .bg{position:absolute;top:0;bottom:0;left:-22%;width:122%;background:url(assets/cocktail.jpg) center 42%/cover no-repeat}
+  .partners-sec::before{content:"";position:absolute;inset:0;z-index:1;background:radial-gradient(45% 55% at 57% 55%,rgba(11,11,11,.7),rgba(11,11,11,.9) 100%),linear-gradient(0deg,var(--bg) 0%,rgba(11,11,11,0) 22%,rgba(11,11,11,0) 78%,var(--bg) 100%)}
+  .partners-sec .wrap{position:relative;z-index:2}
+
+  /* CTA flottant */
+  .sticky-cta{position:fixed;right:28px;bottom:28px;z-index:40;box-shadow:0 18px 50px rgba(0,0,0,.55);opacity:0;transform:translateY(18px);pointer-events:none;transition:opacity .45s,transform .45s,background .35s}
+  .sticky-cta.show{opacity:1;transform:none;pointer-events:auto}
   .team figcaption{display:flex;justify-content:space-between;gap:20px;padding-top:18px;font:500 10px var(--sans);letter-spacing:.3em;text-transform:uppercase;color:var(--faint)}
   .who{display:flex;flex-wrap:wrap;gap:10px 0;margin-top:30px;font:400 italic 22px var(--serif);color:var(--ink)}
   .who span:not(:last-child)::after{content:"·";color:var(--gold);margin:0 14px;font-style:normal}
@@ -217,7 +238,13 @@
     .act{grid-template-columns:44px 1fr;gap:14px;padding:26px 0}
     .act .tag{grid-column:2;margin-top:-8px}
     .act:hover{padding-left:0}
-    .team img{aspect-ratio:16/9;object-position:center}
+    .team img{aspect-ratio:4/3;object-position:center 25%}
+    .founders img{aspect-ratio:3/1;object-position:center 20%}
+    .founders .over{position:relative;padding:24px 0 0}
+    .founders .frame::after{bottom:auto;aspect-ratio:3/1;background:radial-gradient(120% 90% at 50% 40%,rgba(11,11,11,0) 55%,rgba(11,11,11,.5) 100%)}
+    .founders{padding-bottom:96px}
+    .sticky-cta{left:16px;right:16px;bottom:16px;padding:18px}
+    .partners-sec .bg{left:0;width:100%;background-position:62% center}
     .team figcaption{flex-direction:column;gap:6px}
     .dl div{grid-template-columns:1fr;gap:4px}
     .row{grid-template-columns:1fr}
@@ -285,8 +312,8 @@
         </div>
       </div>
       <figure class="team reveal">
-        <img src="assets/equipe.webp" alt="L’équipe DFuse" loading="lazy">
-        <figcaption><span>L’équipe DFuse</span><span>On a hâte de trinquer avec toi</span></figcaption>
+        <div class="frame"><img class="graded" src="assets/equipe-2026.jpg" alt="L’équipe DFuse 2026" loading="lazy"></div>
+        <figcaption><span>L’équipe DFuse — 2026</span><span>On a hâte de trinquer avec toi</span></figcaption>
       </figure>
     </div>
   </section>
@@ -308,7 +335,8 @@
   </section>
 
   <!-- PARTENAIRES -->
-  <section id="partenaires">
+  <section id="partenaires" class="partners-sec">
+    <div class="bg" aria-hidden="true"></div>
     <div class="wrap">
       <div class="partners-head reveal">
         <p class="label">Avec la complicité de</p>
@@ -448,7 +476,24 @@
       </div>
     </div>
   </section>
+
+  <!-- FONDATEURS -->
+  <section class="founders" aria-label="Les membres fondateurs">
+    <div class="wrap">
+      <figure class="frame reveal" style="margin:0">
+        <img class="graded" src="assets/equipe.webp" alt="Les membres fondateurs de DFuse" loading="lazy">
+        <figcaption class="over">
+          <div>
+            <p class="label">Les OG · Membres fondateurs</p>
+            <h2 class="serif" style="margin-top:14px">Merci d’être <em>là depuis le début.</em></h2>
+          </div>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
 </main>
+
+<a class="btn btn-solid sticky-cta" id="sticky-cta" href="#rsvp" aria-hidden="true" tabindex="-1">Confirmer ma présence <span class="arrow" aria-hidden="true"></span></a>
 
 <footer>
   <div class="wrap">
@@ -474,7 +519,18 @@ const EVENT = {
 const EVENT_DATE = new Date("2026-12-11T18:00:00-05:00");
 
 const nav = document.getElementById("nav");
-const onScroll = () => nav.classList.toggle("scrolled", scrollY > 40);
+const stickyCta = document.getElementById("sticky-cta");
+const heroEl = document.querySelector(".hero");
+const rsvpEl = document.getElementById("rsvp");
+const onScroll = () => {
+  nav.classList.toggle("scrolled", scrollY > 40);
+  const pastHero = heroEl.getBoundingClientRect().bottom < innerHeight * 0.35;
+  const atRsvp = rsvpEl.getBoundingClientRect().top < innerHeight * 0.85;
+  const show = pastHero && !atRsvp;
+  stickyCta.classList.toggle("show", show);
+  stickyCta.setAttribute("aria-hidden", String(!show));
+  stickyCta.tabIndex = show ? 0 : -1;
+};
 addEventListener("scroll", onScroll, {passive:true}); onScroll();
 
 (function tick(){
