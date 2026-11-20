@@ -59,7 +59,13 @@ function setup() {
     ['', ''],
     ['Réponses avec restrictions alimentaires', `=COUNTIFS(${R}!C2:C,"Oui",${R}!L2:L,"<>")`]
   ];
-  sum.getRange(1, 1, rows.length, 2).setValues(rows);
+  // Libellés en texte, puis formules via setFormula (syntaxe anglaise acceptée peu importe
+  // la langue de la feuille — setValues échoue en français, qui attend des « ; »).
+  sum.getRange(1, 1, rows.length, 1).setValues(rows.map(function (r) { return [r[0]]; }));
+  sum.getRange('B1').setValue('Valeur');
+  rows.forEach(function (r, i) {
+    if (String(r[1]).charAt(0) === '=') sum.getRange(i + 1, 2).setFormula(r[1]);
+  });
   sum.getRange('A1:B1').setFontWeight('bold').setBackground('#121212').setFontColor('#ffffff');
   sum.getRange('A5:B5').setFontWeight('bold').setBackground('#c8a46a');
   sum.getRange('A8').setFontWeight('bold');
